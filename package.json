@@ -3,6 +3,10 @@
   "displayName": "quokka-alias",
   "description": "Includes aliases from imports in the current file in the .quokka config file",
   "publisher": "mattorp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattorp/quokka-alias.git"
+  },
   "version": "0.1.0",
   "engines": {
     "vscode": "^1.77.0"
