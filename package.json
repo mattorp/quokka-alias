@@ -20,14 +20,6 @@
         "command": "quokka-alias.include-aliases",
         "title": "Include aliases from imports in the current file in .quokka"
       }
-    ],
-    "keybindings": [
-      {
-        "command": "quokka-alias.include-aliases",
-        "key": "meta+k shift+i",
-        "mac": "cmd+k shift+i",
-        "when": "editorTextFocus"
-      }
     ]
   },
   "scripts": {
