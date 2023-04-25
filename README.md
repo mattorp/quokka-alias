@@ -23,7 +23,6 @@ The `.quokka` file, after running the command:
 
 - Automatically include aliases from imports in the `.quokka` file based on your `tsconfig.json` file.
 - Compatible with TypeScript files.
-- Customizable keybinding for running the command.
 
 ## Getting Started
 
