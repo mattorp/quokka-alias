@@ -166,8 +166,6 @@ The extension currently only handles the first entry for each alias in the paths
 }
 ```
 
-It only works with the `import x from 'y'` syntax. It does not work with the `import x = require('y')` syntax.
-
 ## Motivation
 
 The `alias-quokka-plugin` does not currently handle aliases for some setups. This extension serves as a workaround for that issue.
