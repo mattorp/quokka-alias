@@ -2,8 +2,7 @@
 
 All notable changes to the "quokka-alias" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
+## [0.1.9] - 2023-04-25
 
 - Initial release
+- Adds the command `quokka-alias.add-aliases`: `Include aliases from imports in the current file in .quokka`
