@@ -83,7 +83,7 @@ export const findImportPaths = (
  * Returns the file path of the active text editor.
  *
  * @returns The file path or null if no file is active.
- * @throws {Error} If no file is active.
+ * @throws {Error} If no file is active or the file is not a typescript file.
  */
 export const getActiveFilePath = (): string => {
   const filePath = vscode.window.activeTextEditor?.document.fileName
