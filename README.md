@@ -54,7 +54,7 @@ Your `.quokka` file should look something like this:
 
 To use the command, make sure the typescript file is the currently active file and run the command `Include aliases from imports in the current file in .quokka` from the command palette. After running the command, the `.quokka` file will be updated with the aliases used in the current file based on the `tsconfig.json`.
 
-Since Quokka needs to restart for this to take effect, you can use the [runCommands functionality](https://code.visualstudio.com/docs/getstarted/keybindings#_running-multiple-commands) to simplify this (introduced in VSCode 1.77). If you use the `Quokka.js Run once for Current File` command, consider replacing your current keybinding with the following:
+Since Quokka needs to restart for this to take effect, you can use the [runCommands functionality](https://code.visualstudio.com/docs/getstarted/keybindings#_running-multiple-commands) to simplify this (introduced in VSCode 1.77). If you use the `Quokka.js Run once for Current File` command, consider replacing your current keybinding with the following by opening the shortcuts JSON using the command: `Preferences: Open Keyboard Shortcuts (JSON)`.
 
 ```json
 {
