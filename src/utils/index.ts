@@ -1,22 +1,6 @@
-/**
- * @file Utility functions for the Quokka TypeScript Path Alias extension.
- *
- * This module contains utility functions to assist with common tasks:
- * - Getting the base directory of the workspace
- * - Parsing TypeScript configuration paths
- * - Creating a regex for finding import paths
- * - Finding import paths in file content
- * - Getting the active file path
- * - Getting the tsconfig.json file
- * - Opening the Quokka file
- * - Asserting that an import path exists
- *
- * @module utils
- */
-
-import * as fs from 'fs'
-import * as path from 'path'
-import * as vscode from 'vscode'
+import fs from 'fs'
+import path from 'path'
+import vscode from 'vscode'
 
 /**
  * Returns the base directory of the workspace.
@@ -78,57 +62,6 @@ export const parseTsConfigPaths = (tsConfig: any) => {
 }
 
 /**
- * Create a regex to find import paths
- *
- * @param key - The key to use in the regex.
- * @returns The regex.
- */
-export const createImportRegex = (key: string): RegExp => {
-  return new RegExp(
-    `import(?:\\s+\\w+\\s*=\\s*require\\(["']|["'\\s]*[\\w*{}\\n\\r\\t, ]+from\\s*)?(?:["'\\s]*)([${key}][^\\s'"]+)(?:["'\\s].*)?`,
-    'g'
-  )
-}
-
-/**
- * Find import paths in file content
- *
- * @param fileContent - The content of the file containing the imports.
- * @param regex - The regex to use to find the import paths.
- * @returns Import paths.
- */
-export const findImportPaths = (
-  fileContent: string,
-  regex: RegExp
-): string[] => {
-  const importPaths: string[] = []
-  let match
-
-  while ((match = regex.exec(fileContent)) !== null) {
-    importPaths.push(match[1])
-  }
-
-  return importPaths
-}
-
-/**
- * Returns the file path of the active text editor.
- *
- * @returns The file path or null if no file is active.
- * @throws {Error} If no file is active or the file is not a typescript file.
- */
-export const getActiveFilePath = (): string => {
-  const filePath = vscode.window.activeTextEditor?.document.fileName
-  if (!filePath) {
-    throw new Error('No file is active')
-  }
-  if (!filePath.endsWith('.ts')) {
-    throw new Error('Current file is not a typescript file')
-  }
-  return filePath
-}
-
-/**
  * Returns the path to the tsconfig.json file and checks if it exists and contains paths.
  *
  * @returns The path to the tsconfig.json file.
@@ -150,23 +83,22 @@ export const openQuokkaFile = (quokkaPath: string): void => {
   })
 }
 
+export const getWorkspaceRoot = (): string => {
+  return vscode.workspace.workspaceFolders?.[0].uri.fsPath as string
+}
+
 /**
- * Assert that the import path exists
+ * Finds all import statements in a file's content.
  *
- * @param newAlias - The new alias to check.
- * @returns Whether the import path exists.
+ * @param {string} fileContent - The content of the file.
+ * @returns {string[]} - The import paths found in the file.
  */
-export const assertImportPathExists = (newAlias: string) => {
-  const baseDir = getBaseDir()
-  if (
-    !['', '.ts', '/index.ts'].some((ext) =>
-      fs.existsSync(path.join(baseDir, newAlias + ext))
-    )
-  ) {
-    vscode.window.showInformationMessage(
-      `Import path ${newAlias} does not exist`
-    )
-    return false
+export const findImportStatements = (fileContent: string): string[] => {
+  const importRegex = /import\s+.*\s+from\s+['"](.*)['"]/g
+  let match
+  let importPaths = []
+  while ((match = importRegex.exec(fileContent)) !== null) {
+    importPaths.push(match[1])
   }
-  return true
+  return importPaths
 }

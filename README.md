@@ -1,6 +1,6 @@
 # Quokka Alias
 
-`quokka-alias` is a Visual Studio Code extension that automatically updates your `.quokka` file with aliases used in the imports of the current TypeScript file. It reads aliases from the `tsconfig.json` file located in the root of your project.
+`quokka-alias` is a Visual Studio Code extension that automatically updates your `.quokka` file with aliases used in the imports of the current TypeScript file. It reads aliases from the nearest `tsconfig.json` file in the project directory tree and adds them to the `.quokka` file.
 
 Example:
 
@@ -31,7 +31,7 @@ The `.quokka` file, after running the command:
   - `yarn add -D alias-quokka-plugin`
   - `pnpm add -D alias-quokka-plugin`
   - `npm install --save-dev alias-quokka-plugin`
-- Make sure you have a `.quokka` file and a `tsconfig.json` file in the root of your project and that it includes the `alias-quokka-plugin` plugin.
+- Make sure you have a `.quokka` file and a `tsconfig.json` file higher up in the project directory tree than the current file and that the `.quokka` file includes the `alias-quokka-plugin` plugin.
 - Install the quokka-alias extension (this extension).
 
 Your `.quokka` file should look something like this:
@@ -143,8 +143,8 @@ __Note__: The extension does not check for dangling aliases. If an alias is remo
 ## Requirements
 
 - [Quokka.js extension](https://marketplace.visualstudio.com/items?itemName=WallabyJs.quokka-vscode)
-- A `.quokka` file in the root of your project.
-- A `tsconfig.json` file in the root of your project.
+- A `tsconfig.json`  file higher up in the project directory tree than the current file
+- A `.quokka` in the same directory as the `tsconfig.json` file
 
 ## Known Issues
 
@@ -170,6 +170,11 @@ The extension currently only handles the first entry for each alias in the paths
 The `alias-quokka-plugin` does not currently handle aliases for some setups. This extension serves as a workaround for that issue.
 
 ## Release Notes
+
+### 0.2.0
+
+- Now uses the nearest `tsconfig.json` and `.quokka` to resolve aliases
+- Now traverses the entire import tree to resolve aliases
 
 ### 0.1.0
 

@@ -1,4 +1,4 @@
-import * as vscode from 'vscode'
+import vscode from 'vscode'
 
 export const outputChannel = vscode.window.createOutputChannel(
   'mattorp.quokka-alias'
