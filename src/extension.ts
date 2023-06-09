@@ -35,8 +35,8 @@ import {
   createImportRegex,
   findImportPaths,
   getActiveFilePath,
-  getBaseDir,
   getTsConfig,
+  getTsConfigPath,
   openQuokkaFile,
   parseTsConfigPaths,
 } from './utils'
@@ -173,9 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       try {
         const filePath = getActiveFilePath()
-        const quokkaPath = await getQuokkaPath()
-        const tsConfig = getTsConfig()
-
+        const tsConfigPath = getTsConfigPath(filePath)
         updateQuokkaAliases(filePath, quokkaPath, tsConfig)
       } catch (error: any) {
         vscode.window.showErrorMessage(error.message)

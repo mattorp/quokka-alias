@@ -33,6 +33,38 @@ export const getBaseDir = (): string => {
 }
 
 /**
+ * Get the nearest tsconfig.json file path based on the given file path
+ *
+ * @param filepath - The file path to use.
+ * @returns The tsconfig.json file path.
+ * @throws "No tsconfig.json file found higher up in the directory" if no tsconfig.json file is found.
+ */
+export const getTsConfigPath = (filepath: string): string => {
+  const baseDir = getBaseDir()
+  const dirPath = filepath.replace(baseDir, '')
+  const dirPathsToCheck = dirPath.split(path.sep)
+  let tsConfigPath = ''
+  while (dirPathsToCheck.length > 0) {
+    const dirPathToCheck = dirPathsToCheck.join(path.sep)
+    const tsConfigPathToCheck = path.join(
+      baseDir,
+      dirPathToCheck,
+      'tsconfig.json'
+    )
+    if (fs.existsSync(tsConfigPathToCheck)) {
+      tsConfigPath = tsConfigPathToCheck
+      break
+    }
+    dirPathsToCheck.pop()
+  }
+
+  if (!fs.existsSync(tsConfigPath)) {
+    throw new Error('No tsconfig.json file found higher up in the directory')
+  }
+  return tsConfigPath
+}
+
+/**
  * Parse TypeScript configuration paths
  *
  * @param tsConfig - The TypeScript configuration object.
