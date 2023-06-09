@@ -28,7 +28,6 @@
  */
 
 import * as fs from 'fs'
-import * as path from 'path'
 import * as vscode from 'vscode'
 import {
   assertImportPathExists,
@@ -50,7 +49,8 @@ import {
  */
 const generateNewAliases = (
   fileContent: string,
-  tsPaths: [string, string[]][]
+  tsPaths: [string, string[]][],
+  pathToQuokkaFile: string
 ): Record<string, string> => {
   const newAliases = {} as Record<string, string>
 
@@ -63,7 +63,7 @@ const generateNewAliases = (
 
     for (const importPath of importPaths) {
       const newAlias = importPath.replace(key, value)
-      if (assertImportPathExists(newAlias)) {
+      if (assertImportPathExists(newAlias.replace('.', pathToQuokkaFile))) {
         newAliases[importPath] = importPath.replace(key, value)
       }
     }
@@ -90,6 +90,21 @@ const updateQuokkaFile = (
 }
 
 /**
+ * Get the path to the .quokka file
+ *
+ * @param quokkaPath - The path to the .quokka file.
+ * @returns The path to the .quokka file relative to the workspace root.
+ */
+const getPathToQuokkaFile = (quokkaPath: string) =>
+  // remove anything between the workspace root and the .quokka file
+  // example: /Users/username/repo/dir/dir2/.quokka -> dir/dir2
+  // example: /Users/username/repo/dir/.quokka -> dir
+  // example: /Users/username/repo/.quokka -> ''
+  quokkaPath
+    .replace(vscode.workspace.workspaceFolders![0].uri.fsPath, '')
+    .replace('.quokka', '')
+
+/**
  * Updates the aliases in the `.quokka` file based on the imports in the provided file.
  *
  * @param filePath - The path to the file containing the imports.
@@ -103,14 +118,15 @@ const updateQuokkaAliases = (
 ) => {
   const fileContent = fs.readFileSync(filePath, 'utf-8')
   const quokkaConfig = JSON.parse(fs.readFileSync(quokkaPath, 'utf-8'))
-
   const tsPaths = parseTsConfigPaths(tsConfig)
-  const newAliases = generateNewAliases(fileContent, tsPaths)
+  const pathToQuokkaFile = getPathToQuokkaFile(quokkaPath)
+
+  const newAliases = generateNewAliases(fileContent, tsPaths, pathToQuokkaFile)
   updateQuokkaFile(quokkaPath, quokkaConfig, newAliases)
 }
 
 /**
- * Creates a .quokka file in the root directory, that includes the alias-quokka-plugin.
+ * Creates a .quokka file that contains the alias-quokka-plugin and an empty alias object.
  *
  * @param quokkaPath - The path to the .quokka file.
  */
@@ -135,31 +151,29 @@ const createQuokkaFile = (quokkaPath: string): void => {
  * @param quokkaPath - The path to the .quokka file.
  * @throws {Error} If the .quokka file is not found in the root directory and the user does not want to create one.
  */
-const getQuokkaPath = async (): Promise<string> => {
-  const baseDir = getBaseDir()
-  const quokkaPath = path.join(baseDir, '.quokka')
-  if (!fs.existsSync(quokkaPath)) {
+const assertQuokkaFileExists = async (filepath: string): Promise<true> => {
+  if (!fs.existsSync(filepath)) {
     const selection = await vscode.window.showInformationMessage(
-      'No .quokka file found in root directory. Would you like to create a .quokka file?',
+      'No .quokka file found in same directory as the nearest tsconfig.json file. Would you like to create a .quokka file?',
       'Yes',
       'No'
     )
 
     if (selection === 'Yes') {
-      createQuokkaFile(quokkaPath)
+      createQuokkaFile(filepath)
       const showFileSelection = await vscode.window.showInformationMessage(
-        'Created .quokka file in root directory. Please run the command again.',
+        'Created .quokka file in same directory as the nearest tsconfig.json file. Please run the command again.',
         'Show .quokka file',
         'Dismiss'
       )
 
       if (showFileSelection === 'Show .quokka file') {
-        openQuokkaFile(quokkaPath)
+        openQuokkaFile(filepath)
       }
     }
-    throw new Error('No .quokka file in root directory')
+    throw new Error('No .quokka file found higher up in the directory tree.')
   }
-  return quokkaPath
+  return true
 }
 
 /**
@@ -174,6 +188,9 @@ export function activate(context: vscode.ExtensionContext) {
       try {
         const filePath = getActiveFilePath()
         const tsConfigPath = getTsConfigPath(filePath)
+        const quokkaPath = tsConfigPath.replace('tsconfig.json', '.quokka')
+        await assertQuokkaFileExists(quokkaPath)
+        const tsConfig = getTsConfig(tsConfigPath)
         updateQuokkaAliases(filePath, quokkaPath, tsConfig)
       } catch (error: any) {
         vscode.window.showErrorMessage(error.message)

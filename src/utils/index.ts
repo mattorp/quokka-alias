@@ -134,14 +134,8 @@ export const getActiveFilePath = (): string => {
  * @returns The path to the tsconfig.json file.
  * @throws {Error} If the tsconfig.json file is not found in the root directory, or if it does not contain paths.
  */
-export const getTsConfig = (): Record<string, any> => {
-  const baseDir = getBaseDir()
-  const tsConfigPath = path.join(baseDir, 'tsconfig.json')
-  if (!fs.existsSync(tsConfigPath)) {
-    throw new Error('No tsconfig.json file found in root directory')
-  }
-  // Check if tsconfig.json contains paths
-  const tsConfig = JSON.parse(fs.readFileSync(tsConfigPath, 'utf-8'))
+export const getTsConfig = (filepath: string): Record<string, any> => {
+  const tsConfig = JSON.parse(fs.readFileSync(filepath, 'utf-8'))
   if (!tsConfig.compilerOptions.paths) {
     throw new Error(
       'No paths key found in tsconfig.json. You can leave it empty if this is intentional.'
