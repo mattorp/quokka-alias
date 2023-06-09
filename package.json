@@ -32,7 +32,9 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "code-install": "code --install-extension quokka-alias.vsix",
+    "build": "npx vsce package -o quokka-alias.vsix"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
